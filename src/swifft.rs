@@ -13,7 +13,7 @@ use std::simd::u32x64;
 /// A primitive 128th root of unity in $GF(257)$.
 const OMEGA: Gf257 = Gf257::from_u64(42);
 /// The square of the primitive root of unity, used for evaluating polynomials.
-const OMEGA_SQ: Gf257 = OMEGA.mul(OMEGA);
+const OMEGA_SQ: Gf257 = OMEGA.const_mul(OMEGA);
 /// The modulus used for reducing values to $GF(257)$.
 const MOD257: Simd<u32, 64> = u32x64::splat(257);
 
@@ -82,14 +82,14 @@ const W_MATRIX: [u32x64; 64] = const {
             let mut exp = k;
             while exp > 0 {
                 if exp % 2 == 1 {
-                    res = res.mul(base);
+                    res = res.const_mul(base);
                 }
-                base = base.mul(base);
+                base = base.const_mul(base);
                 exp /= 2;
             }
             w[k].as_mut_array()[j] = res.to_u64() as u32;
 
-            omega_pow_2jp1 = omega_pow_2jp1.mul(OMEGA_SQ);
+            omega_pow_2jp1 = omega_pow_2jp1.const_mul(OMEGA_SQ);
             j += 1;
         }
         k += 1;
@@ -224,10 +224,10 @@ mod tests {
 
         let mut j = 0;
         while j < 64 {
-            let right_side = zs1[j].add(zs2[j]);
+            let right_side = zs1[j] + zs2[j];
 
-            let overlap_doubled = two.mul(zs_and[j]);
-            let left_side = zs_xor[j].add(overlap_doubled);
+            let overlap_doubled = two * zs_and[j];
+            let left_side = zs_xor[j] + overlap_doubled;
 
             assert_eq!(left_side, right_side);
             j += 1;

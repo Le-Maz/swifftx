@@ -20,13 +20,8 @@ impl Gf257 {
         self.0[0]
     }
 
-    /// Adds two [`Gf257`] elements together, returning the result modulo 257.
-    pub const fn add(self, other: Self) -> Self {
-        Self::from_u64(self.to_u64() + other.to_u64())
-    }
-
     /// Multiplies two [`Gf257`] elements together, returning the result modulo 257.
-    pub const fn mul(self, other: Self) -> Self {
+    pub const fn const_mul(self, other: Self) -> Self {
         Self::from_u64(self.to_u64() * other.to_u64())
     }
 }
